@@ -47,11 +47,19 @@ Before implementing an endpoint, obtain or identify:
 1. The Battle.net endpoint path and HTTP method.
 2. The required namespace query parameter, such as `profile-us` or `static-us`.
 3. Supported region, locale, and path parameters.
-4. A sanitized, representative JSON response from the live API or official API documentation.
+4. A sanitized, representative JSON response captured with `frostline probe`, when live credentials are available, or from official API documentation.
 5. Whether the endpoint is character/profile data, static data, game data, or media.
 6. Any required API permissions or OAuth scopes.
 
 Do not invent response fields or infer JSON shapes from endpoint names. If a sample response is unavailable, ask for one or implement only the endpoint shell with the uncertainty clearly stated.
+
+To capture a live response for scaffolding, use:
+
+```text
+frostline probe "<endpoint-path-and-query>" --print
+```
+
+The CLI requires Battle.net credentials for this command. If a capture is saved instead of printed, it is written under `samples/`, which is gitignored. Never commit a raw response: trim it to the required shape and sanitize character, realm, guild, account, and other personal data before using it as a test fixture.
 
 ## Repository Patterns
 
