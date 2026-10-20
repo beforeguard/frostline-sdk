@@ -9,7 +9,7 @@
 | Phase | Status | Summary |
 |-------|--------|---------|------
 | Phase 1 - Foundation | ✅ **COMPLETE** | OAuth, HTTP client, configuration, CI/CD, and versioning all working |
-| Phase 2 - WoW SDK | 🚧 **IN PROGRESS** | Character Profile ✅ complete with Result types (Equipment & Guild pending) |
+| Phase 2 - WoW SDK | 🚧 **IN PROGRESS** | Character Profile and Equipment ✅ complete with Result types (Guild pending) |
 | Phase 3 - CLI | 🚧 **IN PROGRESS** | `character get` command ✅ complete with Result-based error handling |
 | Phase 4 | 🚧 **IN PROGRESS** | Result-based error handling ✅ complete, publishing pending |
 
@@ -76,7 +76,7 @@ Start with a small number of endpoints.
 ### Initial capabilities
 
 - [x] Character profile ✅
-- [ ] Character equipment
+- [x] Character equipment ✅
 - [ ] Guild information
 
 ### F# design
@@ -88,7 +88,17 @@ Start with a small number of endpoints.
 - [x] `Result` for expected failures ✅
 - [x] Map external API models into Frostline models
 
-**Milestone:** 🚧 Partially achieved - Character Profile endpoint complete with tests and CLI support.
+**Milestone:** 🚧 Partially achieved - Character Profile and Equipment endpoints complete with tests; Character Profile has CLI support.
+
+### Character Profile API coverage audit
+
+An audit against Blizzard's official [WoW Profile APIs documentation](https://community.developer.battle.net/documentation/world-of-warcraft/profile-apis) was completed on 2026-10-19:
+
+- **Supported:** 2 of 44 endpoints — Character Profile and Character Equipment.
+- **Missing:** 42 endpoints; no endpoints were classified Partial or Unverified.
+- **Recommended next endpoint:** Character Profile Status, which is a small, high-confidence addition that lets consumers verify a character profile before requesting richer resources.
+
+See [WoW Profile API coverage audit](audits/wow-profile-api-coverage.md) for the endpoint-by-endpoint evidence, limitations, and prioritized gaps.
 
 ---
 
@@ -465,10 +475,10 @@ Based on current progress, here are recommended issues to create:
 
 ## Medium Priority (WoW Expansion)
 
-4. **Character Equipment Endpoint** (Phase 2)
-   - Add equipment types and item domain models
-   - Implement `CharacterEquipment.get` function
-   - Add tests for equipment deserialization
+4. **Character Equipment Endpoint** (Phase 2 — SDK complete; CLI pending)
+   - [x] Add equipment types and item domain models
+   - [x] Implement `CharacterEquipment.get` function
+   - [x] Add tests for equipment deserialization
    - Add `frostline character equipment` CLI command
 
 5. **Guild Information Endpoint** (Phase 2)
