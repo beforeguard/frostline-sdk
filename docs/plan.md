@@ -9,7 +9,7 @@
 | Phase | Status | Summary |
 |-------|--------|---------|------
 | Phase 1 - Foundation | ✅ **COMPLETE** | OAuth, HTTP client, configuration, CI/CD, and versioning all working |
-| Phase 2 - WoW SDK | 🚧 **IN PROGRESS** | Character Profile and Equipment ✅ complete with Result types (Guild pending) |
+| Phase 2 - WoW SDK | 🚧 **IN PROGRESS** | Character Profile and Equipment ✅ complete with Result types (Guild summary and roster ✅; activity, achievements and CLI pending) |
 | Phase 3 - CLI | 🚧 **IN PROGRESS** | `character get` command ✅ complete with Result-based error handling |
 | Phase 4 | 🚧 **IN PROGRESS** | Result-based error handling ✅ complete, publishing pending |
 
@@ -77,7 +77,7 @@ Start with a small number of endpoints.
 
 - [x] Character profile ✅
 - [x] Character equipment ✅
-- [ ] Guild information
+- [x] Guild information (summary and roster)
 
 ### F# design
 
