@@ -47,19 +47,21 @@ Before implementing an endpoint, obtain or identify:
 1. The Battle.net endpoint path and HTTP method.
 2. The required namespace query parameter, such as `profile-us` or `static-us`.
 3. Supported region, locale, and path parameters.
-4. A sanitized, representative JSON response captured with `frostline probe`, when live credentials are available, or from official API documentation.
+4. A committed, sanitized fixture captured by the user with `frostline probe --sanitize --fixture <Name>`, or official API documentation.
 5. Whether the endpoint is character/profile data, static data, game data, or media.
 6. Any required API permissions or OAuth scopes.
 
 Do not invent response fields or infer JSON shapes from endpoint names. If a sample response is unavailable, ask for one or implement only the endpoint shell with the uncertainty clearly stated.
 
-To capture a live response for scaffolding, use:
+Fixtures are captured by a human, never by an agent. Agents must never run `frostline probe` and must never handle Battle.net credentials, tokens, or raw API responses.
+
+Work only from committed, sanitized fixtures in `tests/Beforeguard.Frostline.WoW.Tests/Fixtures/` (embedded JSON resources, loaded in tests with `Fixtures.load "<Name>"`). If no fixture exists for the endpoint, stop and ask the user to run:
 
 ```text
-frostline probe "<endpoint-path-and-query>" --print
+frostline probe "<endpoint-path-and-query>" --sanitize --fixture <Name>
 ```
 
-The CLI requires Battle.net credentials for this command. If a capture is saved instead of printed, it is written under `samples/`, which is gitignored. Never commit a raw response: trim it to the required shape and sanitize character, realm, guild, account, and other personal data before using it as a test fixture.
+The user runs this locally with their own credentials and commits the resulting file. `--sanitize` deterministically replaces character, realm, guild, and account data, including identifying URL path segments and query values, while retaining non-identifying link structure; it redacts unrecognized string fields. Never commit a raw response, and never hand-write response JSON in place of a fixture.
 
 ## Repository Patterns
 

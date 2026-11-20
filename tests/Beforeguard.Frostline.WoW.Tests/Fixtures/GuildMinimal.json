@@ -1,0 +1,9 @@
+{
+  "id": 7654321,
+  "name": "Tiny Guild",
+  "faction": { "type": "ALLIANCE", "name": "Alliance" },
+  "achievement_points": 0,
+  "member_count": 1,
+  "realm": { "id": 1, "name": "Area 52", "slug": "area-52" },
+  "created_timestamp": 1600000000000
+}

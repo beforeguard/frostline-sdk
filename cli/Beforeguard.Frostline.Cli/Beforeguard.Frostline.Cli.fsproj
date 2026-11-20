@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Sanitizer.fs" />
+    <Compile Include="ProbeOptions.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

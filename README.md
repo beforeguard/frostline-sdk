@@ -96,6 +96,7 @@ tests/
   Beforeguard.Frostline.Core.Tests/
   Beforeguard.Frostline.Core.Tests.CSharp/
   Beforeguard.Frostline.WoW.Tests/
+  Beforeguard.Frostline.Cli.Tests/
 ```
 
 ## Getting Started
@@ -129,6 +130,27 @@ dotnet user-secrets set "BattleNet:Region" "us" --project cli/Beforeguard.Frostl
 ```bash
 dotnet run --project cli/Beforeguard.Frostline.Cli
 ```
+
+### Capturing test fixtures with `probe`
+
+`frostline probe` fetches a raw Battle.net response so it can be turned into a test fixture:
+
+```text
+frostline probe "<path>" [--print] [--sanitize] [--fixture <Name>]
+```
+
+- `--print` prints the JSON to stdout instead of saving.
+- `--sanitize` replaces character, realm, guild, and account names, slugs, and IDs with deterministic placeholders (the same input always maps to the same placeholder within a file), keeps game data and the JSON structure, and redacts unrecognized string fields (reported as warnings). In `href` and `key` URLs it preserves the host, endpoint shape, namespace, locale, and non-identifying values while replacing only identifying path segments and query values with the same mappings used by the surrounding JSON; non-identifying URLs and non-URL `key` values remain intact.
+- `--fixture <Name>` writes to `tests/Beforeguard.Frostline.WoW.Tests/Fixtures/<Name>.json`, which is embedded in the test assembly.
+- With neither `--print` nor `--fixture`, the response is saved to the gitignored `samples/` folder. `--print` and `--fixture` cannot be combined.
+
+Example:
+
+```bash
+dotnet run --project cli/Beforeguard.Frostline.Cli -- probe "/profile/wow/character/tichondrius/beforeguard/equipment?namespace=profile-us&locale=en_US" --sanitize --fixture CharacterEquipment
+```
+
+Workflow: a human with credentials runs `probe --sanitize --fixture <Name>`, reviews the output, and commits it. Contributors and agents work only from committed fixtures and never run `probe` or handle credentials; if a fixture is missing, ask a maintainer to capture one.
 
 ## Why F#?
 

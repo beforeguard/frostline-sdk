@@ -1,6 +1,7 @@
-﻿open System
+open System
 open System.IO
 open System.Text.Json
+open Beforeguard.Frostline.Cli
 open Beforeguard.Frostline.Core
 open Beforeguard.Frostline.WoW
 open Microsoft.Extensions.Configuration
@@ -174,6 +175,14 @@ let displayEquipment (equipment: CharacterEquipment.CharacterEquipment) =
     printfn "───────────────────────────────────────────────────────────"
     printfn ""
 
+let findRepoRoot () =
+    let rec up (dir: DirectoryInfo | null) =
+        match dir with
+        | null -> Directory.GetCurrentDirectory()
+        | dir when dir.GetFiles("*.slnx").Length > 0 -> dir.FullName
+        | dir -> up dir.Parent
+    up (DirectoryInfo(Directory.GetCurrentDirectory()))
+
 [<EntryPoint>]
 let main argv =
     printfn "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -273,77 +282,104 @@ let main argv =
                     | None -> ()
                     1
             
-        | "probe" :: path :: rest ->
+        | "probe" :: rest ->
             // Raw, untyped capture of any Battle.net endpoint response for scaffolding new models
-            let printOnly = rest |> List.exists (fun a -> a = "--print" || a = "-p")
-            let outputArgs = rest |> List.filter (fun a -> a <> "--print" && a <> "-p")
+            match ProbeOptions.parse rest with
+            | Error message ->
+                printfn "\n❌ %s" message
+                printfn "   Usage: frostline probe \"<path>\" [--print] [--sanitize] [--fixture <Name>]"
+                1
+            | Ok probe ->
 
-            let outputPath =
-                match outputArgs with
-                | file :: _ -> file
-                | [] ->
-                    let safeName = path.Split('?').[0].Trim('/').Replace('/', '-')
-                    Path.Combine("samples", safeName + ".json")
+                printfn "\n🔎 Probing: %s" probe.Path
+                printfn "   Authenticating..."
 
-            printfn "\n🔎 Probing: %s" path
-            printfn "   Authenticating..."
+                let result =
+                    httpClient.getAsync<JsonElement>(probe.Path)
+                    |> Async.AwaitTask
+                    |> Async.RunSynchronously
 
-            let result =
-                httpClient.getAsync<JsonElement>(path)
-                |> Async.AwaitTask
-                |> Async.RunSynchronously
+                match result with
+                | Ok json ->
+                    let options = JsonSerializerOptions(WriteIndented = true)
 
-            match result with
-            | Ok json ->
-                let options = JsonSerializerOptions(WriteIndented = true)
-                let pretty = JsonSerializer.Serialize(json, options)
+                    let pretty =
+                        if probe.Sanitize then
+                            let sanitized = Sanitizer.sanitize json
 
-                if printOnly then
-                    printfn ""
-                    printfn "%s" pretty
-                    0
-                else
-                    match Path.GetDirectoryName(outputPath) with
-                    | null
-                    | "" -> ()
-                    | directory -> Directory.CreateDirectory(directory) |> ignore
+                            for path in sanitized.Redacted do
+                                eprintfn "⚠️  Redacted unrecognized string field: %s" path
 
-                    File.WriteAllText(outputPath, pretty)
+                            sanitized.Json
+                        else
+                            JsonSerializer.Serialize(json, options)
 
-                    printfn "\n✅ Saved response to: %s" outputPath
-                    printfn "   %d bytes written" pretty.Length
-                    0
-            | Error error ->
-                match error with
-                | FrostlineError.NotFound resource ->
-                    printfn "\n❌ Not Found: %s" resource
-                    1
-                | FrostlineError.Unauthorized message ->
-                    printfn "\n❌ Unauthorized: %s" message
-                    1
-                | FrostlineError.RateLimited retryAfter ->
-                    match retryAfter with
-                    | Some seconds -> printfn "\n❌ Rate Limited: Please retry after %d seconds" seconds
-                    | None -> printfn "\n❌ Rate Limited: Too many requests. Please try again later."
-                    1
-                | FrostlineError.GeneralError(message, innerEx) ->
-                    printfn "\n❌ Error: %s" message
-                    match innerEx with
-                    | Some ex -> printfn "   Details: %s" ex.Message
-                    | None -> ()
-                    1
+                    match probe.Output with
+                    | Print ->
+                        printfn ""
+                        printfn "%s" pretty
+                        0
+                    | output ->
+                        let outputPath =
+                            match output with
+                            | Fixture name -> Path.Combine(findRepoRoot (), ProbeOptions.fixturesRelativeDir, name + ".json")
+                            | _ ->
+                                let safeName = probe.Path.Split('?').[0].Trim('/').Replace('/', '-')
+                                Path.Combine("samples", safeName + ".json")
+
+                        match Path.GetDirectoryName(outputPath) with
+                        | null
+                        | "" -> ()
+                        | directory -> Directory.CreateDirectory(directory) |> ignore
+
+                        File.WriteAllText(outputPath, pretty)
+
+                        printfn "\n✅ Saved response to: %s" outputPath
+                        printfn "   %d bytes written" pretty.Length
+
+                        if not probe.Sanitize then
+                            match output with
+                            | Fixture _ -> printfn "⚠️  Not sanitized. Re-run with --sanitize before committing this fixture."
+                            | _ -> ()
+
+                        0
+                | Error error ->
+                    match error with
+                    | FrostlineError.NotFound resource ->
+                        printfn "\n❌ Not Found: %s" resource
+                        1
+                    | FrostlineError.Unauthorized message ->
+                        printfn "\n❌ Unauthorized: %s" message
+                        1
+                    | FrostlineError.RateLimited retryAfter ->
+                        match retryAfter with
+                        | Some seconds -> printfn "\n❌ Rate Limited: Please retry after %d seconds" seconds
+                        | None -> printfn "\n❌ Rate Limited: Too many requests. Please try again later."
+                        1
+                    | FrostlineError.GeneralError(message, innerEx) ->
+                        printfn "\n❌ Error: %s" message
+                        match innerEx with
+                        | Some ex -> printfn "   Details: %s" ex.Message
+                        | None -> ()
+                        1
 
         | [] | ["help"] | ["-h"] | ["--help"] ->
             // Show usage
             printfn "\nUsage:"
             printfn "  frostline character get <realm> <characterName>"
             printfn "  frostline character equipment <realm> <characterName>"
-            printfn "  frostline probe <path> [outputFile] [--print|-p]"
+            printfn "  frostline probe \"<path>\" [--print] [--sanitize] [--fixture <Name>]"
             printfn ""
             printfn "Examples:"
             printfn "  frostline character get tichondrius beforeguard"
             printfn "  frostline character equipment \"area 52\" thrall"
-            printfn "  frostline probe \"/profile/wow/character/tichondrius/beforeguard/equipment?namespace=profile-us&locale=en_US\" --print"
+            printfn "  frostline probe \"/profile/wow/character/tichondrius/beforeguard/equipment?namespace=profile-us&locale=en_US\" --sanitize --fixture CharacterEquipment"
+            printfn ""
+            printfn "Probe options:"
+            printfn "  --print           Print the JSON to stdout instead of saving"
+            printfn "  --sanitize        Replace character, realm, guild and account data with placeholders"
+            printfn "  --fixture <Name>  Save to tests/Beforeguard.Frostline.WoW.Tests/Fixtures/<Name>.json"
+            printfn "  (default)         Save to the gitignored samples/ folder; --print and --fixture are exclusive"
             printfn ""
             printfn "Configuration:"
             printfn "  Region: %s (from config)" (Region.toString clientConfig.Region)
