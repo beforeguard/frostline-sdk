@@ -9,6 +9,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/Beforeguard.Frostline.Core.Tests/Beforeguard.Frostline.Core.Tests.fsproj" />
     <Project Path="tests/Beforeguard.Frostline.Core.Tests.CSharp/Beforeguard.Frostline.Core.Tests.CSharp.csproj" />
+    <Project Path="tests/Beforeguard.Frostline.Cli.Tests/Beforeguard.Frostline.Cli.Tests.fsproj" />
     <Project Path="tests/Beforeguard.Frostline.WoW.Tests/Beforeguard.Frostline.WoW.Tests.fsproj" />
   </Folder>
 

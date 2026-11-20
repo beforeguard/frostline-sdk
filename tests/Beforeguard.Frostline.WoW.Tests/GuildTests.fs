@@ -9,83 +9,12 @@ let private options =
     o.PropertyNameCaseInsensitive <- true
     o
 
-let completeGuildJson = """
-{
-  "id": 1234567,
-  "name": "Example Guild",
-  "faction": { "type": "HORDE", "name": "Horde" },
-  "achievement_points": 5400,
-  "member_count": 120,
-  "realm": { "id": 3676, "name": "Area 52", "slug": "area-52" },
-  "crest": {
-    "emblem": {
-      "id": 12,
-      "media": { "href": "https://example.invalid/media/emblem" },
-      "color": { "id": 1, "rgba": { "r": 255, "g": 200, "b": 0, "a": 1 } }
-    },
-    "border": {
-      "id": 3,
-      "media": { "href": "https://example.invalid/media/border" },
-      "color": { "id": 2, "rgba": { "r": 10, "g": 20, "b": 30, "a": 1 } }
-    },
-    "background": {
-      "color": { "id": 4, "rgba": { "r": 0, "g": 0, "b": 128, "a": 1 } }
-    }
-  },
-  "roster": { "href": "https://example.invalid/roster" },
-  "achievements": { "href": "https://example.invalid/achievements" },
-  "created_timestamp": 1500000000000,
-  "activity": { "href": "https://example.invalid/activity" },
-  "name_search": "example-guild"
-}
-"""
+let completeGuildJson = Fixtures.load "Guild"
+let minimalGuildJson = Fixtures.load "GuildMinimal"
+let rosterJson = Fixtures.load "GuildRoster"
 
-let minimalGuildJson = """
-{
-  "id": 7654321,
-  "name": "Tiny Guild",
-  "faction": { "type": "ALLIANCE", "name": "Alliance" },
-  "achievement_points": 0,
-  "member_count": 1,
-  "realm": { "id": 1, "name": "Area 52", "slug": "area-52" },
-  "created_timestamp": 1600000000000
-}
-"""
 
-let rosterJson = """
-{
-  "guild": {
-    "id": 1234567,
-    "name": "Example Guild",
-    "realm": { "id": 3676, "name": "Area 52", "slug": "area-52" },
-    "faction": { "type": "HORDE", "name": "Horde" }
-  },
-  "members": [
-    {
-      "character": {
-        "name": "Leader",
-        "id": 111,
-        "realm": { "id": 3676, "slug": "area-52" },
-        "level": 80,
-        "playable_class": { "id": 7 },
-        "playable_race": { "id": 2 }
-      },
-      "rank": 0
-    },
-    {
-      "character": {
-        "name": "Member",
-        "id": 222,
-        "realm": { "id": 3676, "slug": "area-52" },
-        "level": 75,
-        "playable_class": { "id": 1 },
-        "playable_race": { "id": 10 }
-      },
-      "rank": 3
-    }
-  ]
-}
-"""
+
 
 [<Fact>]
 let ``deserialize complete guild with all fields`` () =

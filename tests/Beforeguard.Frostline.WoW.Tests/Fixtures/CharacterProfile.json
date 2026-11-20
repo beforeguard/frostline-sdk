@@ -1,0 +1,36 @@
+{
+  "id": 123456789,
+  "name": "Thrall",
+  "gender": {
+    "type": "MALE",
+    "name": "Male"
+  },
+  "faction": {
+    "type": "HORDE",
+    "name": "Horde"
+  },
+  "race": {
+    "id": 2,
+    "name": "Orc"
+  },
+  "character_class": {
+    "id": 7,
+    "name": "Shaman"
+  },
+  "active_spec": {
+    "id": 262,
+    "name": "Enhancement"
+  },
+  "realm": {
+    "id": 1,
+    "name": "Area 52"
+  },
+  "level": 70,
+  "achievement_points": 9850,
+  "average_item_level": 463,
+  "equipped_item_level": 463,
+  "guild": {
+    "id": 12345,
+    "name": "Test Guild"
+  }
+}

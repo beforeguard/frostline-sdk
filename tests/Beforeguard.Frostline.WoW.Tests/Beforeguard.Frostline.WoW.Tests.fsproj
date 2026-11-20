@@ -6,9 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Fixtures.fs" />
     <Compile Include="CharacterProfileTests.fs" />
     <Compile Include="CharacterEquipmentTests.fs" />
     <Compile Include="GuildTests.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Fixtures\*.json" />
   </ItemGroup>
 
   <ItemGroup>

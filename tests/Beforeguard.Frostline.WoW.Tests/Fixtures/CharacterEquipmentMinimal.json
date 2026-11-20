@@ -1,0 +1,50 @@
+{
+  "character": {
+    "id": 987654321,
+    "name": "Gamon",
+    "realm": {
+      "id": 1,
+      "slug": "area-52"
+    }
+  },
+  "equipped_items": [
+    {
+      "item": {
+        "id": 25
+      },
+      "slot": {
+        "type": "MAIN_HAND",
+        "name": "Main Hand"
+      },
+      "quantity": 1,
+      "quality": {
+        "type": "COMMON",
+        "name": "Common"
+      },
+      "name": "Worn Shortsword",
+      "media": {
+        "id": 12345
+      },
+      "item_class": {
+        "id": 2,
+        "name": "Weapon"
+      },
+      "item_subclass": {
+        "id": 7,
+        "name": "Sword"
+      },
+      "inventory_type": {
+        "type": "MAIN_HAND",
+        "name": "Main Hand"
+      },
+      "binding": {
+        "type": "NONE",
+        "name": "None"
+      },
+      "level": {
+        "value": 5,
+        "display_string": "Item Level 5"
+      }
+    }
+  ]
+}

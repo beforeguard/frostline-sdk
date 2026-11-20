@@ -6,44 +6,8 @@ open Xunit
 open Beforeguard.Frostline.WoW.CharacterProfile
 
 // Sample JSON response from Battle.net API
-let sampleCharacterJson = """
-{
-  "id": 123456789,
-  "name": "Thrall",
-  "gender": {
-    "type": "MALE",
-    "name": "Male"
-  },
-  "faction": {
-    "type": "HORDE",
-    "name": "Horde"
-  },
-  "race": {
-    "id": 2,
-    "name": "Orc"
-  },
-  "character_class": {
-    "id": 7,
-    "name": "Shaman"
-  },
-  "active_spec": {
-    "id": 262,
-    "name": "Enhancement"
-  },
-  "realm": {
-    "id": 1,
-    "name": "Area 52"
-  },
-  "level": 70,
-  "achievement_points": 9850,
-  "average_item_level": 463,
-  "equipped_item_level": 463,
-  "guild": {
-    "id": 12345,
-    "name": "Test Guild"
-  }
-}
-"""
+let sampleCharacterJson = Fixtures.load "CharacterProfile"
+let characterWithoutOptionalFields = Fixtures.load "CharacterProfileMinimal"
 
 [<Fact>]
 let ``deserialize complete character profile with all fields`` () =
@@ -71,36 +35,6 @@ let ``deserialize complete character profile with all fields`` () =
     Assert.True(profile.Guild.IsSome)
     Assert.Equal("Test Guild", profile.Guild.Value.Name)
 
-let characterWithoutOptionalFields = """
-{
-"id": 987654321,
-"name": "Gamon",
-"gender": {
-    "type": "MALE",
-    "name": "Male"
-},
-"faction": {
-    "type": "HORDE",
-    "name": "Horde"
-},
-"race": {
-    "id": 2,
-    "name": "Orc"
-},
-"character_class": {
-    "id": 1,
-    "name": "Warrior"
-},
-"realm": {
-    "id": 1,
-    "name": "Area 52"
-},
-"level": 70,
-"achievement_points": 100,
-"average_item_level": 200,
-"equipped_item_level": 200
-}
-"""
 
 [<Fact>]
 let ``deserialize character without optional fields`` () =
