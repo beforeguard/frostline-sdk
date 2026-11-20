@@ -24,3 +24,21 @@ type BattleNetHttpClientExtensions =
     ) =
         CharacterEquipment.get client client.Region realm characterName
         |> AsyncResult.startAsTask
+
+    [<Extension>]
+    static member GetGuildAsync(
+        client: BattleNetHttpClient,
+        realm: string,
+        guildName: string
+    ) =
+        Guild.get client client.Region realm guildName
+        |> AsyncResult.startAsTask
+
+    [<Extension>]
+    static member GetGuildRosterAsync(
+        client: BattleNetHttpClient,
+        realm: string,
+        guildName: string
+    ) =
+        Guild.getRoster client client.Region realm guildName
+        |> AsyncResult.startAsTask
